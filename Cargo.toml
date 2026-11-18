@@ -1,0 +1,26 @@
+[package]
+name = "particle-accelarator"
+version = "0.1.0"
+edition = "2021"
+authors = ["Abhishek Kumar <mr.kumar.abhishek@outlook.in>"]
+description = "High-accuracy double-precision relativistic particle accelerator simulator in Rust with WebAssembly and GitHub Pages builder"
+license = "MIT"
+repository = "https://github.com/Mr-Kumar-Abhishek/particle-accelarator"
+
+[lib]
+name = "particle_accelarator"
+crate-type = ["cdylib", "rlib"]
+
+[[bin]]
+name = "particle-sim"
+path = "src/main.rs"
+
+[[bin]]
+name = "wasm-builder"
+path = "src/bin/wasm_builder.rs"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
