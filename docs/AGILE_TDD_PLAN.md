@@ -53,7 +53,7 @@ Every physics feature in `particle-accelarator` is developed strictly following 
 - **Sprint Goal:** Establish exact `f64` units, 3D geometry, and cancellation-free relativistic particle state representation across 12 decades of energy.
 - **TDD Cycle Log:**
   1. **RED (`tests/tdd_sprints.rs::sprint1_*`):**
-     - Assert $7\text{ TeV}$ LHC proton yields $\gamma \approx 7460.522$ and strictly $\beta < 1.0$.
+     - Assert $7\text{ TeV}$ LHC kinetic energy proton yields $\gamma \approx 7461.522$ and strictly $\beta < 1.0$.
      - Assert $10\text{ eV}$ non-relativistic proton matches classical $v = \sqrt{2 E_k / m_p}$ to $< 10^{-10}$ relative error and recovers exact `10.0 eV` via `kinetic_energy_ev()`.
      - Assert $B\rho = p/|q|$ and Larmor radius $r_L = p / (|q|B)$.
      - Initially fails because `constants.rs`, `vec3.rs`, `particle.rs` do not exist.
@@ -75,7 +75,7 @@ Every physics feature in `particle-accelarator` is developed strictly following 
   2. **GREEN:**
      - Implemented `EmField` in `src/fields.rs` and `boris_step` in `src/integrator.rs` using half-$\mathbf{E}$ kick, $\gamma^-$ calculation, orthogonal $\mathbf{t}$ and $\mathbf{s} = 2\mathbf{t}/(1+|\mathbf{t}|^2)$ rotation, and second half-$\mathbf{E}$ kick.
   3. **REFACTOR:**
-     - Extracted `Vec3::norm_sq()` inside rotationdenominator to avoid unnecessary `sqrt()` calls per substep.
+     - Extracted `Vec3::norm_sq()` inside rotation denominator to avoid unnecessary `sqrt()` calls per substep.
 - **Sprint 2 Velocity:** `8 / 8 SP` (100% completed).
 
 ---
