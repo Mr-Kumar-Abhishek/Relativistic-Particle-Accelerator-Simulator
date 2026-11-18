@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Relativistic Particle Accelerator Simulator — Rust + WebAssembly</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-badge">f64 WASM</div>
+      <div>
+        <h1>Relativistic Particle Accelerator Simulator</h1>
+        <p class="subtitle">Symplectic Boris Pusher &bull; 4th-Order Yoshida Optics &bull; Courant-Snyder Twiss Diagnostics</p>
+      </div>
+    </div>
+    <nav class="tabs" aria-label="Primary Views">
+      <button class="tab-btn active" data-tab="sim">Live Simulator</button>
+      <button class="tab-btn" data-tab="SDLC.md">SDLC</button>
+      <button class="tab-btn" data-tab="SRS.md">SRS</button>
+      <button class="tab-btn" data-tab="AGILE_TDD_PLAN.md">Agile &amp; TDD Sprints</button>
+      <button class="tab-btn" data-tab="SDD.md">SDD</button>
+    </nav>
+    <div id="engine-status" class="status-pill loading">Loading WASM...</div>
+  </header>
+
+  <main id="tab-sim" class="workspace">
+    <aside class="controls-panel">
+      <h2>Beam &amp; Lattice Controls</h2>
+
+      <label class="field">
+        <span>Accelerator Mode</span>
+        <select id="ctrl-mode">
+          <option value="0" selected>Synchrotron FODO Storage Ring</option>
+          <option value="1">Isochronous Relativistic Cyclotron</option>
+          <option value="2">Classical Uniform-B Cyclotron</option>
+        </select>
+      </label>
+
+      <label class="field">
+        <span>Particle Species</span>
+        <select id="ctrl-species">
+          <option value="0" selected>Proton (p+)</option>
+          <option value="1">Electron (e-)</option>
+          <option value="2">Positron (e+)</option>
+          <option value="3">Muon (mu-)</option>
+          <option value="4">Gold Ion (Au79+)</option>
+        </select>
+      </label>
+
+      <label class="field">
+        <span>Injection Energy (MeV): <strong id="val-energy">150</strong></span>
+        <input id="ctrl-energy" type="range" min="1" max="2000" step="1" value="150" />
+      </label>
+
+      <label class="field">
+        <span>Dipole Field B<sub>0</sub> (T): <strong id="val-b">1.50</strong></span>
+        <input id="ctrl-b" type="range" min="0.2" max="8.0" step="0.05" value="1.5" />
+      </label>
+
+      <label class="field">
+        <span>Quadrupole Gradient (T/m): <strong id="val-quad">2.5</strong></span>
+        <input id="ctrl-quad" type="range" min="0" max="15" step="0.25" value="2.5" />
+      </label>
+
+      <label class="field">
+        <span>RF Cavity / Dee Voltage (kV): <strong id="val-rf">400</strong></span>
+        <input id="ctrl-rf" type="range" min="0" max="2500" step="25" value="400" />
+      </label>
+
+      <label class="field">
+        <span>Macro-Particles: <strong id="val-count">128</strong></span>
+        <input id="ctrl-count" type="range" min="16" max="256" step="16" value="128" />
+      </label>
+
+      <label class="field">
+        <span>Boris Substeps / Frame: <strong id="val-substeps">12</strong></span>
+        <input id="ctrl-substeps" type="range" min="1" max="40" step="1" value="12" />
+      </label>
+
+      <div class="btn-row">
+        <button id="btn-toggle" class="primary">Pause</button>
+        <button id="btn-step">Step +1</button>
+        <button id="btn-reset">Reset</button>
+      </div>
+
+      <section class="telemetry-grid">
+        <div class="metric"><span>Lorentz &gamma;</span><strong id="m-gamma">--</strong></div>
+        <div class="metric"><span>Velocity &beta; = v/c</span><strong id="m-beta">--</strong></div>
+        <div class="metric"><span>Kinetic Energy</span><strong id="m-ek">--</strong></div>
+        <div class="metric"><span>Rigidity B&rho;</span><strong id="m-brho">--</strong></div>
+        <div class="metric"><span>Larmor Radius r<sub>L</sub></span><strong id="m-rl">--</strong></div>
+        <div class="metric"><span>Cyclotron f<sub>c</sub></span><strong id="m-fc">--</strong></div>
+        <div class="metric"><span>RMS &sigma;<sub>x</sub> / &sigma;<sub>y</sub></span><strong id="m-rms">--</strong></div>
+        <div class="metric"><span>Emittance &epsilon;<sub>x</sub></span><strong id="m-emit">--</strong></div>
+        <div class="metric"><span>Twiss &beta;<sub>x</sub> / &alpha;<sub>x</sub></span><strong id="m-twiss">--</strong></div>
+        <div class="metric"><span>|&Delta;&gamma;/&gamma;<sub>0</sub>| Invariant</span><strong id="m-drift">--</strong></div>
+        <div class="metric"><span>Synch. Power P<sub>&gamma;</sub></span><strong id="m-power">--</strong></div>
+        <div class="metric"><span>Turns / Alive</span><strong id="m-turns">--</strong></div>
+      </section>
+    </aside>
+
+    <section class="canvas-grid">
+      <article class="card">
+        <header>
+          <h3>Real-Space Beam Orbit &amp; Accelerator Lattice (X-Y Plane)</h3>
+          <span id="orbit-meta" class="badge">R = -- m</span>
+        </header>
+        <canvas id="cv-orbit"></canvas>
+      </article>
+
+      <article class="card">
+        <header>
+          <h3>Transverse Betatron Phase Space (x, x') &amp; Twiss Ellipse</h3>
+          <span id="twiss-meta" class="badge">|&beta;&gamma; - &alpha;&sup2; - 1| = --</span>
+        </header>
+        <canvas id="cv-phase"></canvas>
+      </article>
+
+      <article class="card">
+        <header>
+          <h3>Longitudinal RF Phase Space (&Delta;&phi;, &Delta;E)</h3>
+          <span class="badge">Synchrotron Bucket</span>
+        </header>
+        <canvas id="cv-rf"></canvas>
+      </article>
+
+      <article class="card">
+        <header>
+          <h3>Beam Envelope (&sigma;<sub>x</sub>, &sigma;<sub>y</sub>) &amp; Kinetic Energy History</h3>
+          <span class="badge">Live Telemetry Strip</span>
+        </header>
+        <canvas id="cv-history"></canvas>
+      </article>
+    </section>
+  </main>
+
+  <section id="tab-docs" class="docs-panel hidden">
+    <div class="docs-container">
+      <div class="docs-toolbar">
+        <span id="doc-filename">Document</span>
+        <a id="doc-raw-link" href="#" target="_blank" rel="noopener">Open Raw Markdown</a>
+      </div>
+      <div id="doc-content" class="markdown-body">Loading documentation...</div>
+    </div>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>
