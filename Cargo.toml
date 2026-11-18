@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 authors = ["Abhishek Kumar <mr.kumar.abhishek@outlook.in>"]
 description = "High-accuracy double-precision relativistic particle accelerator simulator in Rust with WebAssembly and GitHub Pages builder"
-license = "MIT"
+license = "BSD-3-Clause"
 repository = "https://github.com/Mr-Kumar-Abhishek/particle-accelarator"
 
 [lib]
