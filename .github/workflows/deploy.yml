@@ -1,0 +1,52 @@
+name: Test, Build WASM & Deploy GitHub Pages
+
+on:
+  push:
+    branches:
+      - master
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  ci-test-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain with wasm32 target
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Cache Cargo artifacts
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.toml') }}
+
+      - name: Run Debug TDD Unit & Integration Test Suite
+        run: cargo test --verbose
+
+      - name: Run Debug CLI Physics Validation Benchmarks
+        run: cargo run --bin particle-sim
+
+      - name: Build WebAssembly Bundle with wasm-builder
+        run: cargo run --bin wasm-builder
+
+      - name: Verify Generated WASM Artifact
+        run: test -s dist/particle_accelarator.wasm && ls -lh dist/
+
+      - name: Deploy dist/ to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          publish_branch: gh-pages
+          commit_message: "ci: deploy Rust WASM particle accelerator simulator to gh-pages"
