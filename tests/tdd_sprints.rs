@@ -315,7 +315,10 @@ fn sprint5_twiss_identity_and_emittance() {
     );
     let diag = BeamDiagnostics::compute(&bunch, 5.0, 1.5);
     assert!(diag.twiss_x.emittance_geom > 0.0);
-    assert!(diag.twiss_x.emittance_norm > diag.twiss_x.emittance_geom);
+    // At 100 MeV, proton beta*gamma ~= 0.4737 < 1, so normalized emittance is beta*gamma * eps_geom
+    let expected_norm = diag.mean_beta * diag.mean_gamma * diag.twiss_x.emittance_geom;
+    let norm_rel_err = (diag.twiss_x.emittance_norm - expected_norm).abs() / expected_norm;
+    assert!(norm_rel_err < 1.0e-3, "norm_rel_err = {norm_rel_err}");
     assert!(
         diag.twiss_x.determinant_residual() < 1.0e-12,
         "Twiss identity residual = {}",
