@@ -1,7 +1,11 @@
-# Relativistic Particle Accelerator Simulator (`particle-accelarator`)
+# Relativistic Particle Accelerator Simulator
 
-A high-accuracy, double-precision (`f64`) relativistic charged-particle accelerator simulator written in Rust with zero external dependencies, validated via a 5-Sprint Test-Driven Development (TDD) physics suite, and compiled to WebAssembly (`wasm32-unknown-unknown`) for interactive browser visualization on GitHub Pages.
+[![Test, Build WASM & Deploy GitHub Pages](https://github.com/Mr-Kumar-Abhishek/Relativistic-Particle-Accelerator-Simulator/actions/workflows/deploy.yml/badge.svg)](https://github.com/Mr-Kumar-Abhishek/Relativistic-Particle-Accelerator-Simulator/actions/workflows/deploy.yml)
+[![License: BSD-3-Clause](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](LICENSE)
 
+A high-accuracy, double-precision (`f64`) relativistic charged-particle accelerator simulator written in Rust (`particle-accelarator` crate) with zero external dependencies, validated via a 5-Sprint Test-Driven Development (TDD) physics suite, and compiled to WebAssembly (`wasm32-unknown-unknown`) for interactive browser visualization on GitHub Pages.
+
+- **Repository:** https://github.com/Mr-Kumar-Abhishek/Relativistic-Particle-Accelerator-Simulator
 - **Live WebAssembly Simulator:** https://mr-kumar-abhishek.github.io/Relativistic-Particle-Accelerator-Simulator/
 - **License:** [BSD 3-Clause License](LICENSE)
 
@@ -29,6 +33,12 @@ A high-accuracy, double-precision (`f64`) relativistic charged-particle accelera
 ---
 
 ## Quick Start
+
+### Clone the Repository
+```bash
+git clone https://github.com/Mr-Kumar-Abhishek/Relativistic-Particle-Accelerator-Simulator.git
+cd Relativistic-Particle-Accelerator-Simulator
+```
 
 ### Run TDD Test Suite & CLI Benchmarks
 ```bash
