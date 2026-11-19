@@ -2,7 +2,7 @@
 
 A high-accuracy, double-precision (`f64`) relativistic charged-particle accelerator simulator written in Rust with zero external dependencies, validated via a 5-Sprint Test-Driven Development (TDD) physics suite, and compiled to WebAssembly (`wasm32-unknown-unknown`) for interactive browser visualization on GitHub Pages.
 
-- **Live WebAssembly Simulator:** https://mr-kumar-abhishek.github.io/particle-accelarator/
+- **Live WebAssembly Simulator:** https://mr-kumar-abhishek.github.io/Relativistic-Particle-Accelerator-Simulator/
 - **License:** [BSD 3-Clause License](LICENSE)
 
 ---
